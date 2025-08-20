@@ -4,6 +4,7 @@
 
 
 Live Demo: https://spam-detectionop8825.streamlit.app/
+
 A **Machine Learning powered web application** that classifies messages as **Spam** or **Not Spam** using Natural Language Processing (NLP).  
 Built with **Scikit-learn, NLTK, and Streamlit** for an interactive UI.
 
