@@ -6,6 +6,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
+# ✅ Safe check for NLTK resources
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
@@ -26,10 +27,10 @@ try:
 except LookupError:
     nltk.download('punkt_tab', download_dir=nltk_data_dir)
 
-
+# Initialize stemmer
 ps = PorterStemmer()
 
-
+# Preprocessing function
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -55,20 +56,28 @@ def transform_text(text):
     return " ".join(y)
 
 # Load vectorizer + model
-
 tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
 model = pickle.load(open('model.pkl', 'rb'))
 
 # Streamlit UI
 st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="centered")
 
-# Custom CSS
+# Custom CSS with animated gradient background
 st.markdown("""
     <style>
     body {
-        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
         font-family: 'Segoe UI', sans-serif;
     }
+
+    @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+
     .title {
         text-align: center;
         font-size: 42px;
@@ -103,24 +112,22 @@ st.markdown("""
         bottom: 10px;
         right: 15px;
         font-size: 14px;
-        color: #ddd;
-        opacity: 0.85;
+        color: #eee;
+        opacity: 0.9;
         text-align: right;
+        font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Title
-
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">AI-powered Email/SMS Spam Detector</div>', unsafe_allow_html=True)
 
 # Input
-
 input_sms = st.text_area("✍️ Type your message here:")
 
 # Prediction
-
 if st.button("🔍 Analyze"):
     if input_sms.strip() == "":
         st.warning("⚠️ Please enter a message before predicting.")
@@ -134,7 +141,7 @@ if st.button("🔍 Analyze"):
         else:
             st.markdown('<div class="result-box ham">✅ Safe Message (Not Spam)</div>', unsafe_allow_html=True)
 
-
+# ✅ Author Mark in bottom-right corner
 st.markdown(
     '<div class="watermark">👨‍💻 Vivek Kumar<br>B.Tech CSE | ML & AI Enthusiast</div>',
     unsafe_allow_html=True
