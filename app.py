@@ -51,32 +51,18 @@ st.markdown("""
     body {
         margin: 0;
         padding: 0;
+        background: #0f2027;
         background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
         font-family: 'Segoe UI', sans-serif;
         overflow: hidden;
     }
 
-    /* Center everything */
-    .center-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-    }
-
-    /* Floating bubbles */
+    /* Floating bubbles background */
     .bubble {
         position: absolute;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.15);
         animation: float 20s infinite;
-        z-index: 1;
     }
     @keyframes float {
         0% { transform: translateY(100vh) scale(0.5); opacity: 0.3; }
@@ -84,7 +70,7 @@ st.markdown("""
         100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
     }
 
-    /* Title */
+    /* Title + subtitle */
     .title {
         text-align: center;
         font-size: 50px;
@@ -96,10 +82,10 @@ st.markdown("""
         text-align: center;
         font-size: 20px;
         color: #cfcfcf;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
 
-    /* Card */
+    /* Card box */
     .card {
         background: rgba(255, 255, 255, 0.1);
         padding: 25px;
@@ -107,18 +93,14 @@ st.markdown("""
         box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
         backdrop-filter: blur(12px);
         text-align: center;
-        width: 500px;
-        z-index: 10;
     }
-
-    /* Text area */
     .card textarea {
         border-radius: 12px !important;
         font-size: 16px;
         padding: 12px;
     }
 
-    /* Result */
+    /* Result box */
     .result-box {
         padding: 25px;
         border-radius: 20px;
@@ -144,16 +126,15 @@ st.markdown("""
         color: #aaa;
         opacity: 0.9;
         font-style: italic;
-        z-index: 20;
     }
 
-    /* Remove default padding */
+    /* Remove Streamlit default padding/box */
     .block-container {
-        padding: 0 !important;
+        padding-top: 0 !important;
     }
     </style>
 
-    <!-- Floating bubbles -->
+    <!-- Floating bubbles (unique background) -->
     <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-duration: 18s;"></div>
     <div class="bubble" style="width: 50px; height: 50px; left: 30%; animation-duration: 22s;"></div>
     <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-duration: 25s;"></div>
@@ -162,26 +143,26 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------- UI ----------------
-st.markdown('<div class="center-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Smart AI-Powered Email & SMS Spam Detector</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="card">', unsafe_allow_html=True)
-input_sms = st.text_area("✍️ Enter your message here:", height=150)
-if st.button("🚀 Detect Spam"):
-    if input_sms.strip() == "":
-        st.warning("⚠️ Please enter a message before predicting.")
-    else:
-        transformed_sms = transform_text(input_sms)
-        vector_input = tfidf.transform([transformed_sms])
-        result = model.predict(vector_input)[0]
-
-        if result == 1:
-            st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1,2,1])  # center card
+with col2:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    input_sms = st.text_area("✍️ Enter your message here:", height=150)
+    if st.button("🚀 Detect Spam"):
+        if input_sms.strip() == "":
+            st.warning("⚠️ Please enter a message before predicting.")
         else:
-            st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+            transformed_sms = transform_text(input_sms)
+            vector_input = tfidf.transform([transformed_sms])
+            result = model.predict(vector_input)[0]
+
+            if result == 1:
+                st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Watermark ----------------
 st.markdown(
