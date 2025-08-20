@@ -56,13 +56,18 @@ st.markdown("""
         overflow: hidden;
     }
 
-    /* Flexbox Center */
-    .main-container {
+    /* Center everything */
+    .center-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        z-index: 10;
     }
 
     /* Floating bubbles */
@@ -71,6 +76,7 @@ st.markdown("""
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.15);
         animation: float 20s infinite;
+        z-index: 1;
     }
     @keyframes float {
         0% { transform: translateY(100vh) scale(0.5); opacity: 0.3; }
@@ -78,7 +84,7 @@ st.markdown("""
         100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
     }
 
-    /* Title + subtitle */
+    /* Title */
     .title {
         text-align: center;
         font-size: 50px;
@@ -93,7 +99,7 @@ st.markdown("""
         margin-bottom: 30px;
     }
 
-    /* Card box */
+    /* Card */
     .card {
         background: rgba(255, 255, 255, 0.1);
         padding: 25px;
@@ -102,14 +108,17 @@ st.markdown("""
         backdrop-filter: blur(12px);
         text-align: center;
         width: 500px;
+        z-index: 10;
     }
+
+    /* Text area */
     .card textarea {
         border-radius: 12px !important;
         font-size: 16px;
         padding: 12px;
     }
 
-    /* Result box */
+    /* Result */
     .result-box {
         padding: 25px;
         border-radius: 20px;
@@ -135,6 +144,7 @@ st.markdown("""
         color: #aaa;
         opacity: 0.9;
         font-style: italic;
+        z-index: 20;
     }
 
     /* Remove default padding */
@@ -152,7 +162,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------- UI ----------------
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
+st.markdown('<div class="center-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Smart AI-Powered Email & SMS Spam Detector</div>', unsafe_allow_html=True)
 
@@ -171,7 +181,6 @@ if st.button("🚀 Detect Spam"):
         else:
             st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
-
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Watermark ----------------
