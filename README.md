@@ -9,3 +9,5 @@ spam-classifier-nlp
 spam-detection-streamlit
 
 spam-filter-ml-app
+
+Live Demo: https://spam-detectionop8825.streamlit.app/
