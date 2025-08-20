@@ -1,2 +1,2 @@
-# spam-app
-"Detects Spam or Ham messages using ML, NLTK, and Scikit-learn"
+# email-spam-classifier-new
+End to end code for the email spam classifier project
