@@ -49,10 +49,28 @@ st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="wide")
 st.markdown("""
     <style>
     body {
-        background: #0f2027;  /* fallback */
+        margin: 0;
+        padding: 0;
+        background: #0f2027;
         background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
         font-family: 'Segoe UI', sans-serif;
+        overflow: hidden;
     }
+
+    /* Floating bubbles background */
+    .bubble {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        animation: float 20s infinite;
+    }
+    @keyframes float {
+        0% { transform: translateY(100vh) scale(0.5); opacity: 0.3; }
+        50% { opacity: 0.8; }
+        100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Title + subtitle */
     .title {
         text-align: center;
         font-size: 50px;
@@ -66,6 +84,8 @@ st.markdown("""
         color: #cfcfcf;
         margin-bottom: 40px;
     }
+
+    /* Card box */
     .card {
         background: rgba(255, 255, 255, 0.1);
         padding: 25px;
@@ -79,6 +99,8 @@ st.markdown("""
         font-size: 16px;
         padding: 12px;
     }
+
+    /* Result box */
     .result-box {
         padding: 25px;
         border-radius: 20px;
@@ -94,6 +116,8 @@ st.markdown("""
         background: linear-gradient(135deg, #4CAF50, #2e7d32);
         color: white;
     }
+
+    /* Watermark */
     .watermark {
         position: fixed;
         bottom: 15px;
@@ -103,7 +127,19 @@ st.markdown("""
         opacity: 0.9;
         font-style: italic;
     }
+
+    /* Remove Streamlit default padding/box */
+    .block-container {
+        padding-top: 0 !important;
+    }
     </style>
+
+    <!-- Floating bubbles (unique background) -->
+    <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-duration: 18s;"></div>
+    <div class="bubble" style="width: 50px; height: 50px; left: 30%; animation-duration: 22s;"></div>
+    <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-duration: 25s;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; left: 70%; animation-duration: 20s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 90%; animation-duration: 30s;"></div>
 """, unsafe_allow_html=True)
 
 # ---------------- UI ----------------
