@@ -6,7 +6,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# ✅ Safe check for NLTK resources
+# ✅ NLTK safe check
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
@@ -27,122 +27,109 @@ try:
 except LookupError:
     nltk.download('punkt_tab', download_dir=nltk_data_dir)
 
-# Initialize stemmer
+# 🔹 Preprocessing
 ps = PorterStemmer()
-
-# Preprocessing function
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
 
-    y = []
-    for i in text:
-        if i.isalnum():
-            y.append(i)
+    y = [i for i in text if i.isalnum()]
+    text = [i for i in y if i not in stopwords.words('english') and i not in string.punctuation]
+    text = [ps.stem(i) for i in text]
+    return " ".join(text)
 
-    text = y[:]
-    y.clear()
+# 🔹 Load model
+tfidf = pickle.load(open('vectorizer.pkl','rb'))
+model = pickle.load(open('model.pkl','rb'))
 
-    for i in text:
-        if i not in stopwords.words('english') and i not in string.punctuation:
-            y.append(i)
+# 🔹 Page config
+st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="wide")
 
-    text = y[:]
-    y.clear()
-
-    for i in text:
-        y.append(ps.stem(i))
-
-    return " ".join(y)
-
-# Load vectorizer + model
-tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
-model = pickle.load(open('model.pkl', 'rb'))
-
-# Streamlit UI
-st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="centered")
-
-# Custom CSS with animated gradient background
+# ---------------- 🎨 Custom CSS ----------------
 st.markdown("""
     <style>
     body {
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
+        background: #0f2027;  /* fallback */
+        background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
         font-family: 'Segoe UI', sans-serif;
     }
-
-    @keyframes gradientBG {
-        0% {background-position: 0% 50%;}
-        50% {background-position: 100% 50%;}
-        100% {background-position: 0% 50%;}
-    }
-
     .title {
         text-align: center;
-        font-size: 42px;
-        font-weight: bold;
-        color: white;
-        margin-bottom: 10px;
+        font-size: 50px;
+        font-weight: 800;
+        color: #f9f9f9;
+        margin-bottom: 5px;
     }
     .subtitle {
         text-align: center;
         font-size: 20px;
-        color: #f0f0f0;
-        margin-bottom: 30px;
+        color: #cfcfcf;
+        margin-bottom: 40px;
+    }
+    .card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+        backdrop-filter: blur(12px);
+        text-align: center;
+    }
+    .card textarea {
+        border-radius: 12px !important;
+        font-size: 16px;
+        padding: 12px;
     }
     .result-box {
         padding: 25px;
-        border-radius: 15px;
-        text-align: center;
+        border-radius: 20px;
         font-size: 24px;
         font-weight: bold;
         margin-top: 20px;
     }
     .spam {
-        background-color: #ff4c4c;
+        background: linear-gradient(135deg, #ff4c4c, #ff0000);
         color: white;
     }
     .ham {
-        background-color: #4CAF50;
+        background: linear-gradient(135deg, #4CAF50, #2e7d32);
         color: white;
     }
     .watermark {
         position: fixed;
-        bottom: 10px;
-        right: 15px;
+        bottom: 15px;
+        right: 20px;
         font-size: 14px;
-        color: #eee;
+        color: #aaa;
         opacity: 0.9;
-        text-align: right;
-        font-weight: bold;
+        font-style: italic;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Title
+# ---------------- UI ----------------
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">AI-powered Email/SMS Spam Detector</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Smart AI-Powered Email & SMS Spam Detector</div>', unsafe_allow_html=True)
 
-# Input
-input_sms = st.text_area("✍️ Type your message here:")
-
-# Prediction
-if st.button("🔍 Analyze"):
-    if input_sms.strip() == "":
-        st.warning("⚠️ Please enter a message before predicting.")
-    else:
-        transformed_sms = transform_text(input_sms)
-        vector_input = tfidf.transform([transformed_sms])
-        result = model.predict(vector_input)[0]
-
-        if result == 1:
-            st.markdown('<div class="result-box spam">🚨 SPAM Detected!</div>', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1,2,1])  # center card
+with col2:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    input_sms = st.text_area("✍️ Enter your message here:", height=150)
+    if st.button("🚀 Detect Spam"):
+        if input_sms.strip() == "":
+            st.warning("⚠️ Please enter a message before predicting.")
         else:
-            st.markdown('<div class="result-box ham">✅ Safe Message (Not Spam)</div>', unsafe_allow_html=True)
+            transformed_sms = transform_text(input_sms)
+            vector_input = tfidf.transform([transformed_sms])
+            result = model.predict(vector_input)[0]
 
-# ✅ Author Mark in bottom-right corner
+            if result == 1:
+                st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------- Watermark ----------------
 st.markdown(
-    '<div class="watermark">👨‍💻 Vivek Kumar<br>B.Tech CSE | ML & AI Enthusiast</div>',
+    '<div class="watermark">✨ Made with ❤️ by Vivek Kumar</div>',
     unsafe_allow_html=True
 )
