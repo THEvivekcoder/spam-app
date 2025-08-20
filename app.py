@@ -51,13 +51,21 @@ st.markdown("""
     body {
         margin: 0;
         padding: 0;
-        background: #0f2027;
         background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
         font-family: 'Segoe UI', sans-serif;
         overflow: hidden;
     }
 
-    /* Floating bubbles background */
+    /* Flexbox Center */
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    /* Floating bubbles */
     .bubble {
         position: absolute;
         border-radius: 50%;
@@ -82,7 +90,7 @@ st.markdown("""
         text-align: center;
         font-size: 20px;
         color: #cfcfcf;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
     }
 
     /* Card box */
@@ -93,6 +101,7 @@ st.markdown("""
         box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
         backdrop-filter: blur(12px);
         text-align: center;
+        width: 500px;
     }
     .card textarea {
         border-radius: 12px !important;
@@ -128,13 +137,13 @@ st.markdown("""
         font-style: italic;
     }
 
-    /* Remove Streamlit default padding/box */
+    /* Remove default padding */
     .block-container {
-        padding-top: 0 !important;
+        padding: 0 !important;
     }
     </style>
 
-    <!-- Floating bubbles (unique background) -->
+    <!-- Floating bubbles -->
     <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-duration: 18s;"></div>
     <div class="bubble" style="width: 50px; height: 50px; left: 30%; animation-duration: 22s;"></div>
     <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-duration: 25s;"></div>
@@ -143,26 +152,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------- UI ----------------
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Smart AI-Powered Email & SMS Spam Detector</div>', unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1,2,1])  # center card
-with col2:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    input_sms = st.text_area("✍️ Enter your message here:", height=150)
-    if st.button("🚀 Detect Spam"):
-        if input_sms.strip() == "":
-            st.warning("⚠️ Please enter a message before predicting.")
-        else:
-            transformed_sms = transform_text(input_sms)
-            vector_input = tfidf.transform([transformed_sms])
-            result = model.predict(vector_input)[0]
+st.markdown('<div class="card">', unsafe_allow_html=True)
+input_sms = st.text_area("✍️ Enter your message here:", height=150)
+if st.button("🚀 Detect Spam"):
+    if input_sms.strip() == "":
+        st.warning("⚠️ Please enter a message before predicting.")
+    else:
+        transformed_sms = transform_text(input_sms)
+        vector_input = tfidf.transform([transformed_sms])
+        result = model.predict(vector_input)[0]
 
-            if result == 1:
-                st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        if result == 1:
+            st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Watermark ----------------
 st.markdown(
