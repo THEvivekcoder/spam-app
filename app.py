@@ -6,7 +6,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# ✅ NLTK safe check
+# ---------------- NLTK Safe Setup ----------------
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
@@ -22,36 +22,29 @@ try:
 except LookupError:
     nltk.download('punkt', download_dir=nltk_data_dir)
 
-try:
-    nltk.data.find('tokenizers/punkt_tab')
-except LookupError:
-    nltk.download('punkt_tab', download_dir=nltk_data_dir)
-
-# 🔹 Preprocessing
+# ---------------- Preprocessing ----------------
 ps = PorterStemmer()
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
-
     y = [i for i in text if i.isalnum()]
     text = [i for i in y if i not in stopwords.words('english') and i not in string.punctuation]
     text = [ps.stem(i) for i in text]
     return " ".join(text)
 
-# 🔹 Load model
+# ---------------- Load Model ----------------
 tfidf = pickle.load(open('vectorizer.pkl','rb'))
 model = pickle.load(open('model.pkl','rb'))
 
-# 🔹 Page config
+# ---------------- Streamlit Page Config ----------------
 st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="wide")
 
-# ---------------- 🎨 Custom CSS ----------------
+# ---------------- Custom CSS ----------------
 st.markdown("""
     <style>
     body {
         margin: 0;
         padding: 0;
-        background: #0f2027;
         background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
         font-family: 'Segoe UI', sans-serif;
         overflow: hidden;
@@ -76,6 +69,7 @@ st.markdown("""
         font-size: 50px;
         font-weight: 800;
         color: #f9f9f9;
+        margin-top: 60px; /* move title down */
         margin-bottom: 5px;
     }
     .subtitle {
@@ -117,24 +111,18 @@ st.markdown("""
         color: white;
     }
 
-    /* Watermark */
+    /* Remove watermark */
     .watermark {
-        position: fixed;
-        bottom: 15px;
-        right: 20px;
-        font-size: 14px;
-        color: #aaa;
-        opacity: 0.9;
-        font-style: italic;
+        display: none;
     }
 
-    /* Remove Streamlit default padding/box */
+    /* Remove Streamlit default padding */
     .block-container {
         padding-top: 0 !important;
     }
     </style>
 
-    <!-- Floating bubbles (unique background) -->
+    <!-- Floating bubbles -->
     <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-duration: 18s;"></div>
     <div class="bubble" style="width: 50px; height: 50px; left: 30%; animation-duration: 22s;"></div>
     <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-duration: 25s;"></div>
@@ -146,10 +134,11 @@ st.markdown("""
 st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Smart AI-Powered Email & SMS Spam Detector</div>', unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1,2,1])  # center card
+col1, col2, col3 = st.columns([1,2,1])
 with col2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
     input_sms = st.text_area("✍️ Enter your message here:", height=150)
+    
     if st.button("🚀 Detect Spam"):
         if input_sms.strip() == "":
             st.warning("⚠️ Please enter a message before predicting.")
@@ -157,15 +146,10 @@ with col2:
             transformed_sms = transform_text(input_sms)
             vector_input = tfidf.transform([transformed_sms])
             result = model.predict(vector_input)[0]
-
+            
             if result == 1:
                 st.markdown('<div class="result-box spam">🚨 This is SPAM!</div>', unsafe_allow_html=True)
             else:
                 st.markdown('<div class="result-box ham">✅ Safe: Not Spam</div>', unsafe_allow_html=True)
+    
     st.markdown('</div>', unsafe_allow_html=True)
-
-# ---------------- Watermark ----------------
-st.markdown(
-    '<div class="watermark">✨ Made with ❤️ by Vivek Kumar</div>',
-    unsafe_allow_html=True
-)
