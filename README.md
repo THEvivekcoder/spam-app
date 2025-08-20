@@ -1,13 +1,14 @@
-#spam or ham sms detector using machine learning.
 
-Live Demo: https://spam-detectionop8825.streamlit.app/
 
 # 🛡️ Spam Shield – Email/SMS Spam Detection
 
+
+Live Demo: https://spam-detectionop8825.streamlit.app/
 A **Machine Learning powered web application** that classifies messages as **Spam** or **Not Spam** using Natural Language Processing (NLP).  
 Built with **Scikit-learn, NLTK, and Streamlit** for an interactive UI.
 
 ---
+
 
 ## 🚀 Features
 - 📩 Detects spam in **Emails & SMS**  
