@@ -6,36 +6,30 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-# ✅ Safe check for NLTK resources with explicit path
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
-
-# Add this line so nltk actually uses this path
 nltk.data.path.append(nltk_data_dir)
 
-# Ensure stopwords
 try:
     stopwords.words('english')
 except LookupError:
     nltk.download('stopwords', download_dir=nltk_data_dir)
 
-# Ensure punkt
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt', download_dir=nltk_data_dir)
 
-# ✅ NEW: Ensure punkt_tab (required in NLTK 3.9+)
 try:
     nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
     nltk.download('punkt_tab', download_dir=nltk_data_dir)
 
-# Initialize stemmer
+
 ps = PorterStemmer()
 
-# Text preprocessing function
+
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
@@ -61,30 +55,87 @@ def transform_text(text):
     return " ".join(y)
 
 # Load vectorizer + model
-tfidf = pickle.load(open('vectorizer.pkl','rb'))
-model = pickle.load(open('model.pkl','rb'))
+
+tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
+model = pickle.load(open('model.pkl', 'rb'))
 
 # Streamlit UI
-st.set_page_config(page_title="Spam Classifier", page_icon="📧", layout="centered")
-st.title("📧 Email/SMS Spam Classifier")
-st.write("Enter a message below and I’ll tell you if it’s **Spam** or **Not Spam**")
+st.set_page_config(page_title="Spam Shield", page_icon="🛡️", layout="centered")
 
-# Input box
-input_sms = st.text_area("✍️ Enter the message:")
+# Custom CSS
+st.markdown("""
+    <style>
+    body {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .title {
+        text-align: center;
+        font-size: 42px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 10px;
+    }
+    .subtitle {
+        text-align: center;
+        font-size: 20px;
+        color: #f0f0f0;
+        margin-bottom: 30px;
+    }
+    .result-box {
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    .spam {
+        background-color: #ff4c4c;
+        color: white;
+    }
+    .ham {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .watermark {
+        position: fixed;
+        bottom: 10px;
+        right: 15px;
+        font-size: 14px;
+        color: #ddd;
+        opacity: 0.85;
+        text-align: right;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Title
+
+st.markdown('<div class="title">🛡️ Spam Shield</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">AI-powered Email/SMS Spam Detector</div>', unsafe_allow_html=True)
+
+# Input
+
+input_sms = st.text_area("✍️ Type your message here:")
 
 # Prediction
-if st.button('🔍 Predict'):
+
+if st.button("🔍 Analyze"):
     if input_sms.strip() == "":
         st.warning("⚠️ Please enter a message before predicting.")
     else:
-        # 1. Preprocess
         transformed_sms = transform_text(input_sms)
-        # 2. Vectorize
         vector_input = tfidf.transform([transformed_sms])
-        # 3. Predict
         result = model.predict(vector_input)[0]
-        # 4. Display
+
         if result == 1:
-            st.error("🚨 This message looks like **SPAM**!")
+            st.markdown('<div class="result-box spam">🚨 SPAM Detected!</div>', unsafe_allow_html=True)
         else:
-            st.success("✅ This message is **Not Spam**.")
+            st.markdown('<div class="result-box ham">✅ Safe Message (Not Spam)</div>', unsafe_allow_html=True)
+
+
+st.markdown(
+    '<div class="watermark">👨‍💻 Vivek Kumar<br>B.Tech CSE | ML & AI Enthusiast</div>',
+    unsafe_allow_html=True
+)
