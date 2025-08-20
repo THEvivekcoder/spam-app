@@ -1,6 +1,12 @@
+import streamlit as st
+import pickle
+import string
 import os
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
 
-# Ensure NLTK resources are available
+# ✅ Safe check for NLTK resources
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 if not os.path.exists(nltk_data_dir):
     os.makedirs(nltk_data_dir)
@@ -15,15 +21,6 @@ try:
 except LookupError:
     nltk.download('punkt', download_dir=nltk_data_dir)
 
-import streamlit as st
-import pickle
-import string
-from nltk.corpus import stopwords
-import nltk
-from nltk.stem.porter import PorterStemmer
-# Download NLTK resources
-nltk.download('punkt')
-nltk.download('stopwords')
 
 
 ps = PorterStemmer()
@@ -73,4 +70,5 @@ if st.button('Predict'):
         st.header("Spam")
     else:
         st.header("Not Spam")
+
 
